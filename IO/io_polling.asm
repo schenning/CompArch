@@ -26,4 +26,4 @@ wait4console2:
 	beq	$zero,	$t5,	wait4console2	# Loop if LSB unset (console busy)
 	sw	$t4,	0($t3)			# Send newline character to console
 
-	b main			# Go to main (infinite loop)
+	b	main			# Go to main (infinite loop)
