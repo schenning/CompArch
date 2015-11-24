@@ -4,6 +4,10 @@
 # with QtSpim. Next, populate the empty sub-programs in the CODING section
 # below.
 
+# writen by Schenning
+
+
+
 ##########
 # CODING #
 ##########
@@ -13,20 +17,18 @@
 
  
 # getc: read a char from keyboard and return it in register $v0
-getc:
-	
-	la   $t0,    0xffff0000  # $t0 = keyboard control register address
-	la   $t1,    0xffff0004  # $t1 = keyboard data register address
-	la 	 $t2,    0xffff0008  # $t3 = console control register address
-	la   $t3, 	 0xffff000c  # $t4 = console data register address
-	li 	 $t4,    10
-	addi $a0,    $zero, 0        		
-	addiu 	$sp,	 $sp,	 -12		 # Make room for stack
-	lw		$t5,	 0($t0)
-	andi 	$t5, 	 $t5, 	 1			 # 
-	beq 	$t5, 	 $zero,  getc
-	lw 		$v0, 	 0($t1) 			 # Store and return character in $v0
-	jr $ra					 # Return
+
+
+getc: 
+	la		$t0,		oxffff0000
+	la 		$t1,		oxffff0004
+getc_wait4char:
+	lw		$t2,		0($t0)  
+	andi	$t2, 		$t2, 	1
+	beq 	$zero, 		$t2, getc_wait4char
+	lw		$v0, 		$($t1)
+	jr		$ra			#return
+
 
 
 
@@ -36,7 +38,7 @@ putc:
 	lw 		$t5, 	0($t2)
 	andi 	$t5, 	$t5, 	1
 	beq 	$zero,  $t5, 	putc
-	sw 		$a0, 	0($t1)	
+	sw 		$v0, 	0($t3)	
 	jr 		$ra		# Return
 	
 	
@@ -45,13 +47,17 @@ putc:
 # $v0. In case something is wrong (guess what could be wrong) store error code 1
 # in $v1, else store 0.
 d2i:
+	addi $v1, $zero, 0
 	la 		$t0, 	'0' 			# $ t0 = set the reg t0 equal to ascii-value of 0
-	la 		$t1, 	'g' 			# $ t1 = set the reg t1 equal to ascii-value of g
+	la 		$t1, 	'9' 	#9org?		# $ t1 = set the reg t1 equal to ascii-value of g
 	slt 	$v1, 	$a0, 	$t0		# 
 	bne $v1, $zero, d2i_end			# if not ($v1==0): BranchIfNotEqual to d2i_end 
-	slt $v1, $t1, $a0				
-	bne $v1, $zero, d2i_end
+	sgt $v1, $a0, $t1				
 	subu $v0, $a0, $t0
+
+
+d2i_end:
+	jr $ra
 
 
 
